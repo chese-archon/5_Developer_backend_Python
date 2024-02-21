@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose type of analysis</title>
+</head>
+<body>
+    <h1>Choose type of analysis</h1>
+    <form id="analysisForm">
+        <button type="submit" onclick="optionalSubmit('all')">Analyze All</button><br><br>
+        <label for="deviceIdInput">Device ID:</label>
+        <input type="text" id="deviceIdInput" name="deviceId" required><br><br>
+        <button type="submit" onclick="optionalSubmit('specific')">Analyze Specific</button><br><br>
+        <input type="submit" value="Submit" style="display: none;"> <!-- Hidden submit button -->
+    </form>
+
+    <script>
+    function optionalSubmit(type) {
+        event.preventDefault(); // Предотвращает отправку формы по умолчанию
+
+        const deviceId = document.getElementById('deviceIdInput').value;
+
+        if (type === 'all') {
+            fetch('/analys_statistic', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ type: 'all' }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+            });
+        } else {
+            if (!deviceId) {
+                alert('Please enter a Device ID for specific analysis.');
+                return;
+            }
+            fetch('/analys_statistic', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ type: 'specific', deviceId: deviceId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+            });
+        }
+    }
+</script>
+
+    <div id="response"></div>
+</body>
+</html>
